@@ -38,10 +38,10 @@ def create_rfm_columns(data, id, dates, revenue):
     max_date = data[dates].max()
     df = data.groupby(id).agg(
         {dates: lambda date: (max_date - date.max()).days,
-                               id: lambda num: len(num),
-                               revenue: lambda price: price.sum()})
+         id: lambda num: len(num),
+         revenue: lambda price: price.sum()})
     df.columns = ['Recency', 'Frequency', 'Monetary']
-    df.reset_index(inplace = True)
+    df.reset_index(inplace=True)
     return df
 
 
@@ -80,13 +80,17 @@ def plot_rfm(data):
     Returns
     -------
     plot
-        3 density histograms for Recency, Frequency, Monetary columns in one graph
+        3 density histograms for Recency, Frequency, Monetary
+         columns in one graph
 
     """
-    plt.figure(figsize=(12,10))
-    plt.subplot(3, 1, 1); sns.distplot(data['Recency'])
-    plt.subplot(3, 1, 2); sns.distplot(data['Frequency'])
-    plt.subplot(3, 1, 3); sns.distplot(data['Monetary'])
+    plt.figure(figsize=(12, 10))
+    plt.subplot(3, 1, 1)
+    sns.distplot(data['Recency'])
+    plt.subplot(3, 1, 2)
+    sns.distplot(data['Frequency'])
+    plt.subplot(3, 1, 3)
+    sns.distplot(data['Monetary'])
     plt.tight_layout()
     plt.show()
 
@@ -94,7 +98,8 @@ def plot_rfm(data):
 def rfm_scores(data):
     """
     Sums R, F, M scores for each person saves in RFM Score column
-    Converting R,F,M Scores to string, concatenates them, and saves in RFM Segments column
+    Converting R,F,M Scores to string, concatenates them,
+     and saves in RFM Segments column
 
     Parameters
     ----------
@@ -106,11 +111,12 @@ def rfm_scores(data):
     Returns
     -------
     data: object
-        Dataframe with 7 columns: id, Recency, Frequency, Monetary, R, F, M. RFM_Score, RFM_Segment
+        Dataframe with 7 columns: id, Recency, Frequency, Monetary,
+         R, F, M. RFM_Score, RFM_Segment
 
 
     """
-    data['RFM_Score'] = data.R.astype(int) +data.F.astype(int) + data.M.astype(int)
+    data['RFM_Score'] = data.R.astype(int) + data.F.astype(int) + data.M.astype(int)
     data['RFM_Segment'] = data.R.astype(str) + data.F.astype(str) + data.M.astype(str)
     data = data.sort_values('RFM_Segment', ascending=False)
     return data
@@ -128,7 +134,8 @@ def top_customers(data):
     Returns
     -------
     data: object
-        Dataframe with 7 columns: id, Recency, Frequency, Monetary, R, F, M. RFM_Score, RFM_Segment(sorted order)
+        Dataframe with 7 columns: id, Recency, Frequency, Monetary,
+         R, F, M. RFM_Score, RFM_Segment(sorted order)
 
     """
     data = data.sort_values('RFM_Segment', ascending=False)
@@ -150,7 +157,7 @@ def naming(df):
 
     """
     if df['RFM_Score'] >= 9:
-            return 'Can\'t Loose Them'
+        return 'Can\'t Loose Them'
     elif ((df['RFM_Score'] >= 8) and (df['RFM_Score'] < 9)):
         return 'Champions'
     elif ((df['RFM_Score'] >= 7) and (df['RFM_Score'] < 8)):
@@ -163,6 +170,7 @@ def naming(df):
         return 'Requires Attention'
     else:
         return 'Demands Activation'
+
 
 def give_names_to_segments(data):
     """
@@ -201,9 +209,9 @@ def segments_distribution(data):
 
     """
     df = data.groupby('Segment_Name').agg({
-    'Recency': 'mean',
-    'Frequency': 'mean',
-    'Monetary': ['mean', 'count']}).round(1)
+        'Recency': 'mean',
+        'Frequency': 'mean',
+        'Monetary': ['mean', 'count']}).round(1)
 
     return df
 
@@ -225,18 +233,17 @@ def visualize_segments(data):
         Squarify graph for all segment distributions
 
     """
-    data.columns = ['RecencyMean','FrequencyMean','MonetaryMean', 'Count']
+    data.columns = ['RecencyMean', 'FrequencyMean', 'MonetaryMean', 'Count']
     fig = plt.gcf()
     ax = fig.add_subplot()
-    squarify.plot(sizes=data['Count'],
-    label=['Can\'t Loose Them',
-    'Champions',
-    'Loyal/Commited',
-    'Requires Attention',
-    'Potential',
-    'Promising',
-    'Demands Activation'], color=sns.color_palette("Spectral",
-                                     len(data)))
-    plt.title("RFM Segments",fontsize=18,fontweight="bold")
+    squarify.plot(sizes=data['Count'],label=['Can\'t Loose Them',
+                                             'Champions',
+                                             'Loyal/Commited',
+                                             'Requires Attention',
+                                             'Potential',
+                                             'Promising',
+                                             'Demands Activation'], color=sns.color_palette("Spectral",
+                                                                                            len(data)))
+    plt.title("RFM Segments", fontsize=18, fontweight="bold")
     plt.axis('off')
     plt.show()
